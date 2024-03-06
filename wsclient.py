@@ -1,9 +1,20 @@
 import asyncio
 import websockets
 import json
-from pythonosc import osc_message_builder
+from pythonosc import osc_message_builder, osc_message
+import argparse
 
 project = "a56bd00e-d71b-11ee-b5f5-408d5c84af19"
+
+
+parser = argparse.ArgumentParser(description='Load project and send GO.')
+
+parser.add_argument('project_id', nargs='?', type=str, help='project uuid', default=None)
+args = parser.parse_args()
+if args.project_id != None:
+    project = args.project_id
+
+
 project_load = {"action":"project_ready","value":project}
 
 message = json.dumps(project_load)
@@ -17,7 +28,12 @@ go_msg = osc_message_builder.OscMessageBuilder(address="/engine/command/go")
 go_msg.add_arg(1)
 build_go_msg = go_msg.build()
 
-ok_go_msg = ""
+go_ok_msg = "/engine/status/running"
+
+stop_msg = osc_message_builder.OscMessageBuilder(address="/engine/command/stop")
+stop_msg.add_arg(1)
+build_stop_msg = stop_msg.build()
+
 
 async def load_and_go():
     uri_ws = "ws://master.local/ws"
@@ -34,17 +50,19 @@ async def load_and_go():
 
     uri_realtime = "ws://master.local/realtime"
     async with websockets.connect(uri_realtime) as websocket:
-        print(type(go_msg))
-        print(go_msg)
+  
         await websocket.send(build_go_msg.dgram)
+        
         response = await websocket.recv()
-        print(response)
-        while response != ok_response:
-            response = json.loads( await websocket.recv() )
-            print(response)
-            await asyncio.sleep(5)
+        msg = osc_message.OscMessage(response)
+        print(msg.address, end =" ")
+        print(msg.params)
+        while response.address != ok_response:
+            response = osc_message.OscMessage(await websocket.recv())
+            print(response.address, end =" ")
+            print(response.params)
 
-        print("response was ok, continue")
+        print("Engine is running, exit")
             
 
 
