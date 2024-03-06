@@ -28,7 +28,7 @@ go_msg = osc_message_builder.OscMessageBuilder(address="/engine/command/go")
 go_msg.add_arg(1)
 build_go_msg = go_msg.build()
 
-go_ok_msg = "/engine/status/running"
+go_ok_msg = "/engine/command/go"
 
 stop_msg = osc_message_builder.OscMessageBuilder(address="/engine/command/stop")
 stop_msg.add_arg(1)
@@ -46,23 +46,23 @@ async def load_and_go():
             print(response)
             await asyncio.sleep(5)
 
-        print("response was ok, continue")
+        print("----------response was ok, continue----------")
 
     uri_realtime = "ws://master.local/realtime"
     async with websockets.connect(uri_realtime) as websocket:
   
         await websocket.send(build_go_msg.dgram)
         
-        response = await websocket.recv()
-        msg = osc_message.OscMessage(response)
-        print(msg.address, end =" ")
-        print(msg.params)
-        while response.address != ok_response:
+        response = osc_message.OscMessage(await websocket.recv())
+        print(response.address, end =" ")
+        print(response.params)
+        while response.address != go_ok_msg:
             response = osc_message.OscMessage(await websocket.recv())
+
             print(response.address, end =" ")
             print(response.params)
 
-        print("Engine is running, exit")
+        print("----------Engine is running, exit----------")
             
 
 
