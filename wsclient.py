@@ -4,7 +4,22 @@ import json
 from pythonosc import osc_message_builder, osc_message
 import argparse
 
-project = "a56bd00e-d71b-11ee-b5f5-408d5c84af19"
+project_id_file = '/etc/cuems/project_id'
+
+default_project = "a56bd00e-d71b-11ee-b5f5-408d5c84af19"
+
+
+
+try:
+    with open(project_id_file, "r") as my_file:
+        project = my_file.read()
+        
+except FileNotFoundError as e:
+    print(f'can not open project_if file {e}')
+
+    project = default_project
+
+
 
 
 parser = argparse.ArgumentParser(description='Load project and send GO.')

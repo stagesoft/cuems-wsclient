@@ -16,6 +16,15 @@ IP = "0.0.0.0"
 #IP = "192.168.1.12"
 SERVER_IP = "192.168.1.1"
 
+project_1 = "a56bd00e-d71b-11ee-b5f5-111111111111"
+
+project_2 = "a56bd00e-d71b-11ee-b5f5-222222222222"
+
+project_3 = "a56bd00e-d71b-11ee-b5f5-333333333333"
+
+
+
+
 project_id_file = '/etc/cuems/project_id'
 
 def shutdown_handler(addr, *args):
@@ -29,7 +38,16 @@ def program_change_handler(addr, *args):
     print(f"received program id: {args[0]}")
 
     if args[0] != None:
-        project_id = args[0]
+        project_num = args[0]
+
+
+    if project_num == 1:
+            project_id = project_1
+    elif project_num == 2:
+            project_id = project_2
+    elif project_num == 2:
+            project_id = project_3
+
 
     try:
 
