@@ -12,11 +12,9 @@ import os
 
 INPORT = 6007
 OUTPORT = 6006
-IP = "0.0.0.0"
-#IP = "192.168.1.12"
-SERVER_IP = "192.168.1.1"
+IP = "192.168.2.204"
 
-project_1 = "a56bd00e-d71b-11ee-b5f5-111111111111"
+project_1 = "618caa6e-dc7c-11ee-8a69-00e04c0206a4"
 
 project_2 = "a56bd00e-d71b-11ee-b5f5-222222222222"
 
@@ -30,8 +28,15 @@ project_id_file = '/etc/cuems/project_id'
 def shutdown_handler(addr, *args):
     
     print("received shutdown")
-    subprocess.Popen('/usr/local/bin/shutdown.sh', shell=True)
+    subprocess.call('/usr/local/bin/stop.sh', shell=True)
+    subprocess.call(['/usr/bin/sudo /usr/sbin/shutdown -h now'], shell=True)
+
+
+def restart_handler(addr, *args):
     
+    print("received restart")
+    subprocess.call('/usr/local/bin/stop.sh', shell=True)
+    subprocess.call(['/usr/bin/sudo /usr/sbin/shutdown -r now'], shell=True)
 
 def program_change_handler(addr, *args):
 
@@ -57,8 +62,10 @@ def program_change_handler(addr, *args):
         print(f"Something else went wrong {e}")
 
     time.sleep(1)
+
     print("received program change")
-    subprocess.Popen('/usr/local/bin/shutdown.sh', shell=True)
+    subprocess.call('/usr/local/bin/stop.sh', shell=True)
+    subprocess.call(['/usr/bin/sudo /usr/sbin/shutdown -r now'], shell=True)
 
 def default_osc_handler(addr, *args):
     print(f'Recibido mensaje OSC no reconocido : direccion -> {addr} | datos -> {args}')
@@ -67,10 +74,10 @@ def default_osc_handler(addr, *args):
  # creamos nuestro dispatcher de mensajes OSC
 dispatcher = Dispatcher()
 
-  # asignamos manejadores en rutas de formato "/game_#" para los juegos
 dispatcher.map(f"/afrucat/shutdown", shutdown_handler)
 
-  # asignamos manejador para los mensajes de taquilla
+dispatcher.map(f"/afrucat/restart", restart_handler)
+
 dispatcher.map(f"/afrucat/program", program_change_handler)
 
  # asignamos manejador por defecto
