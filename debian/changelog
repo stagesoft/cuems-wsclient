@@ -1,0 +1,34 @@
+cuems-wsclient (0.2.0-1) UNRELEASED; urgency=medium
+
+  * Initial Debian packaging (dh-virtualenv); produces cuems-power-bridge.
+  * Restructure repo to src/cuemswsclient/ layout; modernise wsclient.py
+    + osclistener.py with license headers (kept for backwards compat).
+  * New cuems-power-bridge daemon: HTTP server on :8478 that coordinates
+    orderly cluster shutdown for the Shelly Pro 1 flip-switch and the
+    Bitfocus Companion shutdown button. Single coordinator, asyncio.Lock
+    against double-trigger.
+  * Bridge maintains two persistent WebSocket connections (engine binary
+    OSC on :9190, editor JSON on :9092) — engine connection drives the
+    /engine/status/* cache used for refuse_if_running, editor connection
+    drives the auto-load project_ready path.
+  * Shutdown flow: refuse if project running → SSH-fanout poweroff to
+    every NodeType.slave from network_map.xml → reachability poll until
+    all nodes silent → arm Shelly hardware safety timer (Switch.Set
+    on=true toggle_after=N) → local systemctl poweroff --no-block. Real
+    orderly shutdown; mains drops on an already-off box.
+  * Bridge exposes POST /go and POST /stop as thin HTTP→WebSocket-OSC
+    proxies for Bitfocus Companion, since Companion's OSC module is
+    UDP/TCP, not WebSocket-OSC. 200 ms per-endpoint rate-limit.
+  * Auto-load on boot via editor's project_ready action (matches
+    wsclient.py's proven pattern). auto_load_persistent flag for
+    unattended installations; fail-fast on bad UUID via editor's error
+    frame; auto-load disabled after 3 consecutive failures.
+  * Configurable safety bounds: shelly_safety_timer_s validated 45..300s
+    at startup; dry_run mode logs side-effects without executing.
+  * Ships Shelly mJS template at /usr/share/cuems/shelly-mjs/cuems-
+    shutdown.js; operator helper cuems-power-bridge-deploy-keys
+    distributes the SSH pubkey to every node's authorized_keys.
+  * Console entry points: cuems-power-bridge, cuems-power-bridge-deploy-
+    keys, cuems-wsclient (legacy CLI).
+
+ -- Ion Reguera <ion@stagelab.coop>  Wed, 27 May 2026 14:30:00 +0200

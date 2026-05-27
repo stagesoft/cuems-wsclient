@@ -1,0 +1,46 @@
+Source: cuems-wsclient
+Section: python
+Priority: optional
+Maintainer: Ion Reguera <ion@stagelab.coop>
+Build-Depends: debhelper-compat (= 13),
+               dh-virtualenv (>= 1.2),
+               python3-all,
+               python3-setuptools,
+               python3-pip,
+               python3-dev
+Standards-Version: 4.6.0
+Homepage: https://github.com/stagesoft/cuems-wsclient
+
+Package: cuems-power-bridge
+Architecture: all
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         cuems-utils (>= 0.1.0rc5),
+         cuems-common (>= 1.0.0),
+         python3 (>= 3.11),
+         python3-systemd (>= 235),
+         openssh-client,
+         iputils-ping
+Description: CUEMS power bridge — Shelly + Companion shutdown coordinator
+ cuems-power-bridge is the HTTP-fronted coordinator that orchestrates
+ orderly cluster shutdown when an operator flips the wired Shelly Pro 1
+ power switch, or presses the shutdown button on a Bitfocus Companion
+ Stream Deck. It also fronts GO / STOP for Stream Deck operation,
+ translating HTTP POSTs into WebSocket-OSC frames against the engine
+ on :9190.
+ .
+ The bridge maintains persistent WebSocket connections to the controller
+ engine (:9190, binary OSC) and the editor (:9092, JSON). It refuses
+ shutdown while a project is running, SSHes every NodeType.slave from
+ /etc/cuems/network_map.xml to power them off, polls until they go
+ silent on the network, arms a Shelly hardware safety timer, then
+ systemctl-poweroffs the controller — the Shelly cuts mains a configured
+ number of seconds later, on an already-off box.
+ .
+ Auto-loads a configurable show project at boot via the editor's
+ project_ready WebSocket action, matching the proven wsclient.py pattern.
+ .
+ Installs into /usr/lib/cuems/ virtualenv (provided by cuems-utils).
+ Console entry points at /usr/lib/cuems/bin/{cuems-power-bridge,
+ cuems-power-bridge-deploy-keys,cuems-wsclient}. systemd unit is shipped
+ in cuems-common.

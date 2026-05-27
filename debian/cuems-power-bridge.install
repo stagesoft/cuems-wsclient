@@ -1,0 +1,4 @@
+# Ship default config under /usr/share for postinst-time copy + as
+# package-data fallback inside the venv.
+src/cuemswsclient/data/power-bridge.conf.default usr/share/cuems/
+src/cuemswsclient/data/shelly-mjs/cuems-shutdown.js usr/share/cuems/shelly-mjs/

@@ -1,0 +1,65 @@
+#!/bin/sh
+set -e
+
+# SPDX-FileCopyrightText: 2026 Stagelab Coop SCCL
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# cuems-power-bridge post-installation script
+#
+# 1. Drop a starter /etc/cuems/power-bridge.conf if none exists (operator
+#    customises Shelly URL, shared_token, auto_load_project, etc).
+# 2. Generate the SSH keypair used to ssh+poweroff cluster nodes.
+# 3. Reload systemd to pick up the unit shipped in cuems-common.
+
+CONF=/etc/cuems/power-bridge.conf
+DEFAULT_CONF=/usr/share/cuems/power-bridge.conf.default
+KEY=/etc/cuems/power-bridge.key
+
+case "$1" in
+    configure)
+        # Ensure /etc/cuems exists (cuems-common normally creates it).
+        if [ ! -d /etc/cuems ]; then
+            mkdir -p /etc/cuems
+            chmod 0755 /etc/cuems
+        fi
+
+        # Drop starter config on first install only.
+        if [ ! -f "$CONF" ] && [ -f "$DEFAULT_CONF" ]; then
+            install -m 0644 "$DEFAULT_CONF" "$CONF"
+            echo "cuems-power-bridge: starter config installed at $CONF"
+            echo "cuems-power-bridge: edit shelly_url, shared_token, auto_load_project before starting."
+        fi
+
+        # Generate SSH keypair (ed25519, no passphrase) if missing.
+        if [ ! -f "$KEY" ]; then
+            ssh-keygen -q -t ed25519 -N "" -f "$KEY" -C "cuems-power-bridge@$(hostname)"
+            chmod 0600 "$KEY"
+            chmod 0644 "${KEY}.pub"
+            # Owner: cuems if user exists, else root.
+            if id cuems >/dev/null 2>&1; then
+                chown cuems:cuems "$KEY" "${KEY}.pub"
+            fi
+            echo "cuems-power-bridge: SSH keypair generated at $KEY"
+            echo "cuems-power-bridge: run 'cuems-power-bridge-deploy-keys <node>...' to authorise nodes."
+        fi
+
+        # Reload systemd if available (unit is shipped by cuems-common).
+        if command -v deb-systemd-helper >/dev/null 2>&1; then
+            deb-systemd-helper update-state >/dev/null 2>&1 || true
+        elif command -v systemctl >/dev/null 2>&1; then
+            systemctl daemon-reload || true
+        fi
+        ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+        ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0
