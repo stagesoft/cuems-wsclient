@@ -350,8 +350,31 @@ class Bridge:
             log.info("auto-load: project loaded (engine status confirms)")
             return
 
+        # Editor responded with success BEFORE engine status arrived (the
+        # broadcast and editor ack race; editor wins ~30% of the time on
+        # localhost). Editor success means the project_ready handler ran
+        # to completion — accept that as confirmation, with a final check
+        # against the engine status cache.
+        editor_resp_ok = (
+            editor_err_task in done
+            and editor_err_task.result() is False
+            and self.editor.connected
+        )
+        if editor_resp_ok and self.engine.project_loaded():
+            self._auto_load_done = True
+            self._auto_load_failures = 0
+            log.info("auto-load: project loaded (editor ack + engine cache confirm)")
+            return
+        if self.engine.project_loaded():
+            # Race the other way: engine status arrived but our wait_engine
+            # task got cancelled before its sleep cycle saw it. Still OK.
+            self._auto_load_done = True
+            self._auto_load_failures = 0
+            log.info("auto-load: project loaded (engine cache confirms post-wait)")
+            return
+
         self._auto_load_failures += 1
-        log.warning("auto-load: timed out waiting for engine status (failure %d/3)",
+        log.warning("auto-load: no confirmation within 60s (failure %d/3)",
                     self._auto_load_failures)
         if self._auto_load_failures >= 3:
             log.error("auto-load: 3 consecutive failures, disabling for session")
