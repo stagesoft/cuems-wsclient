@@ -1,3 +1,12 @@
+# SPDX-FileCopyrightText: 2026 Stagelab Coop SCCL
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileContributor: Ion Reguera <ion@stagelab.coop>
+
+# Legacy per-site UDP OSC listener (afrucat venue). Pre-dates the
+# cuems-power-bridge daemon. Kept in tree but superseded for new
+# deployments by cuems-power-bridge, which centralises shutdown/GO/STOP
+# via HTTP + WebSocket-OSC.
+
 from pythonosc.dispatcher import Dispatcher
 from pythonosc import osc_server
 
