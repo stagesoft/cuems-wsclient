@@ -49,6 +49,13 @@ class Config:
     ssh_user: str = "cuems"
     ssh_key: str = "/etc/cuems/power-bridge.key"
     poweroff_cmd: str = "sudo /sbin/poweroff"
+    # Optional override for the LOCAL controller poweroff. Empty → fall back
+    # to `poweroff_cmd`. Useful when:
+    # - Controller WoL-from-S5 is unreliable (Realtek r8169 known issue), so
+    #   you want the controller to reboot while nodes really power off.
+    # - Maintenance flows where the controller comes back unattended via
+    #   boot-on-power-restore + a systemd reboot is the safer recovery.
+    controller_poweroff_cmd: str = ""
 
     # Bind
     listen_host: str = "0.0.0.0"

@@ -257,11 +257,14 @@ class Bridge:
                 self.cfg.shelly_safety_timer_s,
             )
 
-        # Step 10: local systemctl poweroff --no-block.
+        # Step 10: local controller poweroff/reboot.
+        # Use controller_poweroff_cmd if set (e.g. "sudo systemctl reboot"
+        # for safe testing when WoL-from-S5 is unreliable), otherwise fall
+        # back to poweroff_cmd (the same command used to SSH-poweroff nodes).
         self._set_state("poweroff-issued")
-        cmd = self.cfg.poweroff_cmd.split()
-        # Replace bare poweroff with --no-block variant where reasonable.
-        # The conf default is "sudo /sbin/poweroff"; we add --no-block.
+        local_cmd_str = self.cfg.controller_poweroff_cmd.strip() or self.cfg.poweroff_cmd
+        cmd = local_cmd_str.split()
+        # --no-block lets us flip /status to done before systemd reaps us.
         if "--no-block" not in cmd:
             cmd = cmd + ["--no-block"]
         if self.cfg.dry_run:

@@ -29,6 +29,11 @@ unresolvable_nodes_policy = skip          # nodes with no role_id/alias/hostname
 ssh_user = cuems
 ssh_key = /etc/cuems/power-bridge.key
 poweroff_cmd = sudo /sbin/poweroff
+# Optional split for the local controller. Empty → use poweroff_cmd above.
+# Set to "sudo /usr/bin/systemctl reboot" when controller WoL-from-S5 is
+# unreliable (Realtek r8169 known issue) so you can safely test the cluster
+# shutdown — nodes really power off, controller reboots and comes back.
+controller_poweroff_cmd =
 
 # --- HTTP bind ---
 listen_host = 0.0.0.0                     # Shelly + Companion both reach this
