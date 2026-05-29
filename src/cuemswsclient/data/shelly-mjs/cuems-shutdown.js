@@ -12,7 +12,13 @@
 // SPDX-FileCopyrightText: 2026 Stagelab Coop SCCL
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-let BRIDGE = "http://controller.local:8478";   // avahi alias; bond0 IP shifts (DHCP if available, static fallback)
+// BRIDGE: today controller.local is the bond0 avahi alias and is what
+// the Shelly (on the production LAN) reaches. There's a planned migration
+// where bond0 will be renamed to formitgo.local and controller.local will
+// scope to a non-bond0 interface (the "ipv4all" iface) — when that lands,
+// flip this to http://formitgo.local:8478 (and update Companion's URL).
+// Always use the alias of the interface that's on the Shelly's L2.
+let BRIDGE = "http://controller.local:8478";
 let TOKEN  = "REPLACE-ME";                 // matches power-bridge.conf shared_token
 let inflight = false;                      // simple debounce guard
 
