@@ -47,6 +47,7 @@ pytest-mock = "*"
 [tool.poetry.scripts]
 cuems-power-bridge = "cuemswsclient.scripts.power_bridge:main"
 cuems-power-bridge-deploy-keys = "cuemswsclient.scripts.deploy_keys:main"
+cuems-power-bridge-install-mjs = "cuemswsclient.scripts.install_shelly_mjs:main"
 cuems-wsclient = "cuemswsclient.wsclient:main_cli"
 
 [tool.pytest.ini_options]
