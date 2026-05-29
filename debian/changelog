@@ -1,3 +1,14 @@
+cuems-wsclient (0.2.5-1) UNRELEASED; urgency=medium
+
+  * shelly-mjs: replace em-dash (U+2014) with `--` in the formitgo.local
+    migration comment. Shelly's Script.PutCode RPC rejects any non-ASCII
+    byte with `-103: Missing or bad argument 'code'!`, which trips
+    install_shelly_mjs.py's pre-flight ASCII validator. Same gotcha as
+    the original mJS template introduction; the rule still holds —
+    keep this file ASCII-only.
+
+ -- Ion Reguera <ion@stagelab.coop>  Fri, 29 May 2026 21:46:00 +0200
+
 cuems-wsclient (0.2.4-1) UNRELEASED; urgency=medium
 
   * shelly-mjs template: default BRIDGE to http://controller.local:8478
