@@ -1,0 +1,7 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2026 Stagelab Coop SCCL
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Shim to expose the cuems-power-bridge daemon on the operator's PATH.
+# The actual entry point lives in the cuems shared virtualenv at
+# /usr/lib/cuems/bin/ (installed by the dh-virtualenv .deb).
+exec /usr/lib/cuems/bin/cuems-power-bridge "$@"

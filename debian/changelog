@@ -1,3 +1,16 @@
+cuems-wsclient (0.2.2-1) UNRELEASED; urgency=medium
+
+  * Add /usr/bin/ shims so the operator CLIs are on PATH alongside
+    cuems-logs, cuems-ola-profile, etc. The actual entries still live in
+    the cuems venv at /usr/lib/cuems/bin/ (where systemd's ExecStart
+    finds them); the new /usr/bin/ wrappers just exec the venv binary
+    so operators don't have to type the full path:
+    - /usr/bin/cuems-power-bridge
+    - /usr/bin/cuems-power-bridge-deploy-keys
+    - /usr/bin/cuems-power-bridge-install-mjs
+
+ -- Ion Reguera <ion@stagelab.coop>  Fri, 29 May 2026 19:46:00 +0200
+
 cuems-wsclient (0.2.1-1) UNRELEASED; urgency=medium
 
   * bridge: fix auto-load editor-success race that logged a false failure
