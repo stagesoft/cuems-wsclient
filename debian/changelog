@@ -1,3 +1,21 @@
+cuems-wsclient (0.2.1-1) UNRELEASED; urgency=medium
+
+  * bridge: fix auto-load editor-success race that logged a false failure
+    when the editor's project_ready ack returned before wait_engine's first
+    sleep cycle (167868c). Three races in a row would have wrongly disabled
+    auto-load for the session.
+  * bridge: add controller_poweroff_cmd config field, optional split of the
+    local controller's poweroff/reboot command from the SSH node command
+    (f4c2304). Empty default preserves existing single-cmd behaviour; useful
+    for safe testing when controller WoL-from-S5 is unreliable, and for
+    maintenance reboots that should leave nodes powered off.
+  * End-to-end verified against a real Shelly Pro 1 (`source: "timer"`
+    proves hardware fired autonomously); SSH-fanout to slave_dev real
+    (rc=0), reachability poll detected slave's network-down at +14s, then
+    Shelly armed and local poweroff issued at +16s.
+
+ -- Ion Reguera <ion@stagelab.coop>  Fri, 29 May 2026 19:20:00 +0200
+
 cuems-wsclient (0.2.0-1) UNRELEASED; urgency=medium
 
   * Initial Debian packaging (dh-virtualenv); produces cuems-power-bridge.
