@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2026 Stagelab Coop SCCL
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[Unit]
+Description=CUEMS power bridge (Shelly + Companion shutdown coordinator)
+After=network-online.target cuems-controller-engine.service cuems-editor.service
+Wants=network-online.target cuems-editor.service
+# Deliberately NOT PartOf=cuems-controller.target: bridge must survive
+# engine restarts so the engine_state cache can reconnect with backoff
+# and the auto-load loop can recover.
+
+[Service]
+Type=notify
+NotifyAccess=main
+User=cuems
+Group=cuems
+ExecStart=/usr/lib/cuems/bin/cuems-power-bridge
+Restart=on-failure
+RestartSec=3
+SyslogIdentifier=cuems-power-bridge
+# Need to exec ssh and sudo systemctl poweroff — leave most defaults open.
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/etc/cuems
+PrivateTmp=no
+
+[Install]
+WantedBy=cuems-controller.target

@@ -1,3 +1,15 @@
+cuems-wsclient (0.2.3-1) UNRELEASED; urgency=medium
+
+  * Ship debian/cuems-power-bridge.service from this package instead of
+    cuems-common. The unit belongs with the .deb that actually runs the
+    daemon — cuems-power-bridge is an opt-in controller-only install,
+    whereas cuems-common lands on every CUEMS host. Picked up
+    automatically by dh_installsystemd. The companion sudoers file stays
+    in cuems-common (every host needs the NOPASSWD entry so the bridge's
+    SSH-fanout poweroff lands on nodes that don't have this package).
+
+ -- Ion Reguera <ion@stagelab.coop>  Fri, 29 May 2026 20:10:00 +0200
+
 cuems-wsclient (0.2.2-1) UNRELEASED; urgency=medium
 
   * Add /usr/bin/ shims so the operator CLIs are on PATH alongside
