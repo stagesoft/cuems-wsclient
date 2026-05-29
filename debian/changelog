@@ -1,3 +1,16 @@
+cuems-wsclient (0.2.4-1) UNRELEASED; urgency=medium
+
+  * shelly-mjs template: default BRIDGE to http://controller.local:8478
+    (avahi alias) instead of the raw bond0 IP. The previous "use the IP,
+    not .local" advice was wrong — verified end-to-end on real hardware
+    that Shelly's mJS HTTP client resolves controller.local cleanly.
+    Hard-coding the IP fails on the production cluster because bond0
+    takes DHCP if available and only falls back to the static lease,
+    so the IP shifts across boots. install_shelly_mjs.py updated to
+    match the new template literal so --bridge patching still works.
+
+ -- Ion Reguera <ion@stagelab.coop>  Fri, 29 May 2026 21:30:00 +0200
+
 cuems-wsclient (0.2.3-1) UNRELEASED; urgency=medium
 
   * Ship debian/cuems-power-bridge.service from this package instead of

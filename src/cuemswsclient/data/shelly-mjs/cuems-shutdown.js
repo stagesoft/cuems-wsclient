@@ -12,7 +12,7 @@
 // SPDX-FileCopyrightText: 2026 Stagelab Coop SCCL
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-let BRIDGE = "http://192.168.6.1:8478";   // controller bond0 IP (NOT .local)
+let BRIDGE = "http://controller.local:8478";   // avahi alias; bond0 IP shifts (DHCP if available, static fallback)
 let TOKEN  = "REPLACE-ME";                 // matches power-bridge.conf shared_token
 let inflight = false;                      // simple debounce guard
 

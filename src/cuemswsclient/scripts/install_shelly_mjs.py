@@ -36,7 +36,7 @@ def _patched_code(template: str, bridge: str, token: str) -> str:
     """Patch the BRIDGE + TOKEN literals in the shipped template."""
     code = template
     code = code.replace(
-        'let BRIDGE = "http://192.168.6.1:8478";',
+        'let BRIDGE = "http://controller.local:8478";',
         f'let BRIDGE = "{bridge}";',
         1,
     )
